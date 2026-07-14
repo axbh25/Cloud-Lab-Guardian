@@ -1,0 +1,67 @@
+The Cloud Lab Guardian MVP is live. Do a release-hardening pass only.
+
+Do not redesign the app.
+Do not add paid AI APIs.
+Do not add Bedrock integration.
+Do not remove the current 8-section results view.
+
+Focus on correctness, safety, and portfolio readiness.
+
+Tasks:
+
+1. Audit all generated AWS CLI commands.
+   Make sure every command is copy-paste safe.
+   Check especially:
+   - AWS CLI flags must use double hyphens, such as --function-name, --region, --bucket.
+   - S3 paths must always render as s3://BUCKET_NAME, never s3: /BUCKET_NAME.
+   - IAM ARNs must not contain spaces, such as arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole.
+   - Region values like us-east-1 must never be broken by invisible characters.
+   - Multi-line shell commands must preserve backslashes correctly.
+   - Commands should be displayed in proper code blocks with a copy button.
+
+2. Replace API Gateway cleanup commands with Lambda Function URL cleanup commands unless API Gateway is actually detected as a selected service.
+   The MVP architecture should prefer Lambda Function URL, not API Gateway.
+
+3. For $0 budget mode:
+   - Do not list Bedrock as a required service.
+   - Show Bedrock only as “Optional Advanced / High Risk.”
+   - Generate a no-Bedrock MVP path first.
+   - Explain that Bedrock can be added later after budget alerts and rate limits are in place.
+
+4. Update the beginner AWS CLI setup guidance.
+   - Do not make long-term IAM access keys the default beginner path.
+   - Prefer AWS Console, AWS CloudShell, or IAM Identity Center / temporary credentials.
+   - If access keys are mentioned, place them in an “advanced local CLI option” warning box.
+
+5. Make AWS Budgets console-first.
+   Budget CLI JSON is easy to break for beginners.
+   The default instruction should say:
+   AWS Console → Billing and Cost Management → Budgets → Create budget → Zero spend budget.
+
+6. Add golden tests for guardianAgent.ts.
+   Test these prompts:
+   - “Create a beginner AWS AI project using S3 and Lambda.”
+   - “Build a serverless image uploader.”
+   - “Build an app with EC2, RDS, NAT Gateway, and public S3.”
+   - “Create a Bedrock chatbot with a $0 budget.”
+   - “Build a Lambda Function URL API.”
+
+7. The tests must verify:
+   - Every plan warns against public S3.
+   - Every plan warns against AdministratorAccess.
+   - Every plan warns against hardcoded AWS keys.
+   - $0 budget does not treat Bedrock as required.
+   - Risky services are marked high risk.
+   - Cleanup commands are included.
+   - Generated commands contain --function-name, --region, and s3:// where appropriate.
+   - Generated commands do not contain malformed strings like “s3: /”, “arn:aws:iam :”, or single-hyphen AWS CLI flags.
+
+8. Add a small “Mode” indicator:
+   - Local deterministic mode
+   - Lambda API mode
+   - Lambda failed, using local fallback
+
+9. Add a version number visible in the footer:
+   Cloud Lab Guardian v0.1.0
+
+Return a summary of files changed and tests added.

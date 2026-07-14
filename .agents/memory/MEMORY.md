@@ -1,0 +1,1 @@
+- [Cloud Lab Guardian pipeline](cloud-lab-guardian-pipeline.md) — key design rules for the deterministic agent pipeline and test setup.

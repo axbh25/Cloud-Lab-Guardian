@@ -1,36 +1,47 @@
-# [Project name]
+# Cloud Lab Guardian
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An agentic AWS project mentor for safe beginner cloud labs. A beginner types an AWS project idea and the app generates a comprehensive, free-tier-aware lab plan with architecture, security warnings, cost review, step-by-step CLI commands, and a downloadable portfolio README.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/cloud-lab-guardian run dev` — run the frontend (port 20255)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080, not used by this app)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React + Vite, Tailwind CSS, shadcn/ui, wouter
+- Agent pipeline: deterministic/rule-based TypeScript (no paid APIs required)
+- Build: Vite (static)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/cloud-lab-guardian/src/lib/guardianAgent.ts` — the entire rule-based agent pipeline (normalizeUserIdea, detectServices, generateArchitecture, generateSecurityReview, generateCostReview, generateSteps, generateCleanup, generateReadme, runGuardianPipeline)
+- `artifacts/cloud-lab-guardian/src/pages/Home.tsx` — main page (form + results)
+- `artifacts/cloud-lab-guardian/src/components/GuardianForm.tsx` — input form
+- `artifacts/cloud-lab-guardian/src/components/PlanResults.tsx` — results display with tabs
+- `artifacts/cloud-lab-guardian/src/components/sections/` — one file per results section
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Fully frontend-only: the entire agent pipeline is deterministic TypeScript, no backend needed.
+- Optionally delegates to a Lambda Function URL if `LAB_GUARDIAN_API_URL` env var is set (falls back to local pipeline on failure).
+- No user data is stored — everything is computed on-demand in the browser.
+- Service detection is keyword-based with a fixed ruleset in `guardianAgent.ts`.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users describe an AWS project idea, choose their skill level and budget tolerance, and get:
+1. Clarifying questions to think through
+2. Detected AWS services with risk levels and free-tier details
+3. Architecture description with ASCII diagram and component cards
+4. Step-by-step CLI implementation guide with copyable commands
+5. Security review with severity-rated warnings, IAM recommendations, best practices
+6. Cost and free-tier analysis with budget advice
+7. Interactive cleanup checklist with CLI teardown commands
+8. Downloadable portfolio README.md
 
 ## User preferences
 
@@ -38,7 +49,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `FileMarkdown` does not exist in lucide-react — use `FileText` instead.
+- The app is frontend-only; avoid adding backend dependencies unless the user asks.
+- `LAB_GUARDIAN_API_URL` can be set as a Vite env var to delegate to a Lambda Function URL.
 
 ## Pointers
 

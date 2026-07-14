@@ -1,0 +1,62 @@
+Build a Streamlit web app called “Cloud Lab Guardian: An Agentic AWS Project Mentor for Safe Beginner Cloud Labs.”
+
+Goal:
+A beginner types an AWS project idea, such as “build a serverless image uploader,” and the app generates a safe, free-tier-aware AWS lab plan.
+
+Use Python + Streamlit.
+
+Important constraints:
+- Do not require OpenAI, Bedrock, or any paid model API for the MVP.
+- Build a deterministic/rule-based agent pipeline.
+- Do not store user data by default.
+- Do not require AWS credentials in Replit.
+- Do not put secrets in frontend code.
+- The app should work locally without AWS.
+- Later it should optionally call a Lambda Function URL if LAB_GUARDIAN_API_URL is set.
+
+Required UI:
+1. App title and short explanation.
+2. Text area for project idea.
+3. Beginner skill level selector.
+4. Monthly budget risk tolerance selector: $0, $1, $5, $10.
+5. AWS region text input defaulting to us-east-1.
+6. Generate Plan button.
+7. Display these sections:
+   - Clarifying questions
+   - Beginner-friendly architecture
+   - Required AWS services
+   - Step-by-step implementation
+   - Security risks and IAM warnings
+   - Cost/free-tier warnings
+   - Cleanup checklist and cleanup commands
+   - Portfolio README preview
+8. Add a Download README.md button.
+
+Agent pipeline:
+- normalize_user_idea()
+- detect_services()
+- generate_architecture()
+- generate_security_review()
+- generate_cost_review()
+- generate_steps()
+- generate_cleanup()
+- generate_readme()
+
+Safety behavior:
+- Always warn against public S3 buckets.
+- Always warn against AdministratorAccess.
+- Always warn against hardcoded AWS keys.
+- Always recommend AWS Budgets.
+- Mark EC2, RDS, NAT Gateway, SageMaker endpoints, GPUs, provisioned concurrency, and public S3 as high cost or high risk for beginners.
+- For AI projects, suggest Bedrock only as optional and warn that model usage may cost money.
+- For S3 projects, suggest private bucket + Block Public Access + small test files.
+- For Lambda projects, suggest 128 MB memory, short timeout, low reserved concurrency, and CloudWatch log retention.
+
+Create these files:
+- app.py
+- guardian_agent.py
+- requirements.txt
+- README.md
+- tests/test_guardian_agent.py
+
+Use simple, clean code with comments.
