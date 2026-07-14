@@ -1,0 +1,96 @@
+Cloud Lab Guardian v0.1.0 has passed final verification.
+
+Now prepare the repository for GitHub portfolio release.
+
+Do not add new product features.
+Do not redesign the UI.
+Do not add paid APIs.
+Do not add Bedrock integration.
+
+Goal:
+Make the repo look professional, easy to run, and safe for public GitHub.
+
+Tasks:
+
+1. Create or polish the root README.md for the repository.
+   It should include:
+   - Project title: Cloud Lab Guardian
+   - One-sentence description
+   - Problem statement
+   - What makes it agentic
+   - Features
+   - Tech stack
+   - Architecture diagram using Mermaid
+   - Safety rules enforced
+   - Cost/free-tier awareness
+   - How to run locally
+   - How to run tests
+   - Optional Lambda Function URL integration
+   - Environment variables
+   - Screenshots section
+   - Future improvements
+   - Disclaimer that generated AWS commands must still be reviewed before use
+
+2. Add an .env.example file.
+   Include:
+   VITE_LAB_GUARDIAN_API_URL=
+   or the exact env variable name used by the app.
+   Do not include real secrets.
+
+3. Add or verify .gitignore.
+   Ensure it ignores:
+   node_modules
+   dist
+   .env
+   .env.local
+   coverage
+   Replit/cache files if present
+
+4. Add SECURITY.md.
+   Include:
+   - No hardcoded AWS credentials
+   - Do not paste root credentials
+   - Use CloudShell or temporary credentials first
+   - Generated plans are educational and must be reviewed before real deployment
+   - Report security issues privately
+
+5. Add DEPLOYMENT.md.
+   Include:
+   - Replit deployment notes
+   - Optional Lambda Function URL notes
+   - CORS warning
+   - Public endpoint warning
+   - Reserved concurrency recommendation
+   - Cleanup reminder
+
+6. Add TESTING.md.
+   Include:
+   - pnpm test
+   - pnpm build
+   - TypeScript typecheck
+   - Summary of the 81 golden tests
+   - The regression test for Lambda Function URL not triggering API Gateway
+
+7. Add a screenshots folder if it does not exist.
+   Add placeholder names or instructions:
+   - screenshots/home.png
+   - screenshots/overview.png
+   - screenshots/security.png
+   - screenshots/cost.png
+   - screenshots/cleanup.png
+   - screenshots/readme-export.png
+
+8. Make sure the app footer and README both say:
+   Cloud Lab Guardian v0.1.0
+
+9. Run:
+   - pnpm test
+   - pnpm build
+   - TypeScript typecheck if available
+
+10. Return:
+   - files created
+   - files changed
+   - final test result
+   - final build result
+   - whether the repo is ready for GitHub
