@@ -1,7 +1,7 @@
 /**
  * Cloud Lab Guardian — Deterministic Agent Pipeline v0.1.0
  * Rule-based AWS lab plan generator. No paid APIs required.
- * Optionally calls a Lambda Function URL if LAB_GUARDIAN_API_URL is set.
+ * Optionally calls a browser-callable Lambda Function URL if VITE_LAB_GUARDIAN_API_URL is set.
  */
 
 // ---------------------------------------------------------------------------
@@ -102,7 +102,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "AWS Lambda",
       icon: "λ",
       riskLevel: "safe",
-      freetier: "1M requests/month + 400,000 GB-seconds free forever",
+      freetier: "Free-tier eligible within limited AWS Free Tier allowances or credits; terms vary by account, region, usage, and current AWS terms",
     },
   },
   {
@@ -112,7 +112,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon S3",
       icon: "🗄",
       riskLevel: "caution",
-      freetier: "5 GB storage + 20K GET + 2K PUT requests free for 12 months",
+      freetier: "Free-tier eligible / limited allowance; storage, requests, and data transfer can incur charges",
     },
   },
   {
@@ -122,7 +122,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon API Gateway",
       icon: "🔌",
       riskLevel: "safe",
-      freetier: "1M HTTP API calls/month free for 12 months",
+      freetier: "Free-tier eligible for a limited 12-month API call allowance on eligible accounts; then billed",
     },
   },
   {
@@ -132,7 +132,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon DynamoDB",
       icon: "🗃",
       riskLevel: "safe",
-      freetier: "25 GB storage + 25 read/write capacity units free forever",
+      freetier: "Free-tier eligible within limited AWS Free Tier allowances or credits; use provisioned capacity for published free-tier limits",
     },
   },
   {
@@ -142,7 +142,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon RDS",
       icon: "🏦",
       riskLevel: "high",
-      freetier: "750 hours/month db.t2.micro free for 12 months ONLY (then billed)",
+      freetier: "Limited 12-month allowance for eligible new accounts only; instances bill continuously when outside limits",
     },
   },
   {
@@ -152,7 +152,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon EC2",
       icon: "🖥",
       riskLevel: "high",
-      freetier: "750 hours/month t2.micro free for 12 months ONLY (then billed)",
+      freetier: "Limited 12-month allowance for eligible new accounts only; instances and storage can bill continuously",
     },
   },
   {
@@ -162,7 +162,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon CloudWatch",
       icon: "📊",
       riskLevel: "safe",
-      freetier: "10 custom metrics + 10 alarms + 5 GB log ingestion free",
+      freetier: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
     },
   },
   {
@@ -172,7 +172,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon Cognito",
       icon: "🔐",
       riskLevel: "safe",
-      freetier: "50,000 monthly active users (MAUs) free for user pools",
+      freetier: "Free-tier eligible for limited monthly active users, subject to current AWS terms",
     },
   },
   {
@@ -182,7 +182,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon SQS",
       icon: "📨",
       riskLevel: "safe",
-      freetier: "1M requests/month free forever",
+      freetier: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
     },
   },
   {
@@ -192,7 +192,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon SNS",
       icon: "🔔",
       riskLevel: "safe",
-      freetier: "1M publishes + 100K HTTP deliveries free forever",
+      freetier: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits; SMS is paid",
     },
   },
   {
@@ -202,7 +202,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "Amazon CloudFront",
       icon: "🌐",
       riskLevel: "safe",
-      freetier: "1 TB data transfer + 10M requests free per month for 12 months",
+      freetier: "Free-tier eligible for limited data transfer and request allowances on eligible accounts",
     },
   },
   {
@@ -212,7 +212,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "AWS IAM",
       icon: "🛡",
       riskLevel: "safe",
-      freetier: "Always free — no charge for IAM",
+      freetier: "No separate charge for IAM users, roles, or policies",
     },
   },
   {
@@ -242,7 +242,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "AWS Step Functions",
       icon: "🔄",
       riskLevel: "safe",
-      freetier: "4,000 state transitions/month free forever",
+      freetier: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
     },
   },
   {
@@ -252,7 +252,7 @@ const SERVICE_RULES: ServiceRule[] = [
       awsName: "AWS Amplify",
       icon: "⚡",
       riskLevel: "safe",
-      freetier: "15 GB served + 1,000 build minutes free/month for 12 months",
+      freetier: "Free-tier eligible for limited hosting and build-minute allowances on eligible accounts",
     },
   },
 ];
@@ -343,7 +343,7 @@ export function generateClarifyingQuestions(
     questions.push("Have you set a spending limit in AWS Budgets before enabling AI features?");
   }
 
-  questions.push("Do you already have an AWS account? (free tier is strongly recommended for beginners)");
+  questions.push("Do you already have an AWS account, and have you checked its current Free Tier or credit status?");
   questions.push("What is your target timeline — a weekend project or a multi-week build?");
 
   return questions.slice(0, 6);
@@ -426,7 +426,7 @@ function getBeginnerTip(serviceName: string, _skillLevel: SkillLevel): string {
     EC2: "⚠️ HIGH RISK: EC2 instances incur charges even when stopped. Always terminate (not just stop) instances you no longer need.",
     CloudWatch:
       "Set a log retention policy on every Lambda log group — the default is never expire, which will cost money over time.",
-    Cognito: "Use the hosted UI to avoid building login screens from scratch. Stick within the 50K MAU free tier.",
+    Cognito: "Use the hosted UI to avoid building login screens from scratch. Keep usage tiny and check current MAU allowances.",
     SQS: "Start with a Standard queue. Configure a dead-letter queue to catch and inspect failed messages.",
     SNS: "Avoid SMS notifications during early testing — each message costs ~$0.0075 in the US.",
     CloudFront: "Use the default cache behavior first. Invalidations cost $0.005 each after the first 1,000/month.",
@@ -434,7 +434,7 @@ function getBeginnerTip(serviceName: string, _skillLevel: SkillLevel): string {
     Bedrock: "⚠️ BILLED PER TOKEN (no free tier): Set a Budget alert before testing. Start with smaller models like Claude Haiku.",
     SageMaker: "⚠️ EXPENSIVE: Notebook instances and endpoints run continuously. Shut them down the moment you finish.",
     "Step Functions": "Use Express Workflows for high-volume tasks, Standard Workflows for long-running processes.",
-    Amplify: "Connect your GitHub repo for automatic deployments. The free tier covers most small projects easily.",
+    Amplify: "Connect your GitHub repo for automatic deployments. Keep builds small and check current hosting/build-minute allowances.",
   };
   return tips[serviceName] ?? `Follow AWS Well-Architected Framework principles when configuring ${serviceName}.`;
 }
@@ -481,7 +481,7 @@ function buildDiagram(services: DetectedService[]): string {
     d += "            ▼\n";
   } else if (hasLambda) {
     d += "  ┌─────────────────────┐\n";
-    d += "  │  Lambda Function URL│  ← HTTPS endpoint (free, no API Gateway)\n";
+    d += "  │  Lambda Function URL│  ← HTTPS endpoint (no API Gateway)\n";
     d += "  └─────────┬───────────┘\n";
     d += "            │\n";
     d += "            ▼\n";
@@ -587,7 +587,7 @@ export function generateSecurityReview(
       level: "warning",
       title: "Set Lambda reserved concurrency when using Function URLs",
       description:
-        "Lambda Function URLs have no built-in throttling. Set a reserved concurrency limit (start with 10) on your function to cap maximum parallel invocations and prevent runaway billing from bots or loops.",
+        "Lambda Function URLs have no built-in throttling. Prefer AWS_IAM auth, set a low reserved concurrency limit (start with 10), restrict CORS, and validate request body size before processing to limit abuse and runaway billing.",
     });
   }
 
@@ -641,7 +641,7 @@ export function generateSecurityReview(
   bestPractices.push("Use the principle of least privilege: grant only the minimum permissions required for each resource");
   bestPractices.push("Enable versioning on S3 buckets storing important data to protect against accidental deletion");
   bestPractices.push("Prefer IAM Identity Center (SSO) or AWS CloudShell over long-term IAM access keys");
-  bestPractices.push("Review your AWS Trusted Advisor recommendations monthly — the free tier covers security checks");
+  bestPractices.push("Review your AWS Trusted Advisor recommendations monthly and confirm which checks are available on your support plan");
 
   return { warnings, iamRecommendations, bestPractices };
 }
@@ -662,62 +662,62 @@ export function generateCostReview(
 
   const costMap: Record<string, CostEntry> = {
     Lambda: {
-      free: "1M requests + 400,000 GB-seconds/month free forever",
-      risk: "Negligible for hobby projects — you pay only above 1M invocations/month",
+      free: "Free-tier eligible within limited AWS Free Tier allowances or credits; common published allowance is 1M requests + 400,000 GB-seconds/month",
+      risk: "Low for small hobby projects when kept within account-specific AWS Free Tier limits or credits",
       riskLevel: "free",
     },
     "API Gateway": {
-      free: "1M HTTP API calls/month free for 12 months",
-      risk: "$1.00 per million calls after the free tier expires",
+      free: "Free-tier eligible for a limited 12-month API call allowance on eligible accounts; then billed",
+      risk: "$1.00 per million calls after eligible allowances expire or usage exceeds them",
       riskLevel: "low",
     },
     S3: {
-      free: "5 GB storage + 20K GET + 2K PUT requests free for 12 months",
-      risk: "Watch for data transfer out charges ($0.09/GB after the first 1 GB/month) — large file downloads add up",
+      free: "Free-tier eligible / limited allowance; storage, requests, and data transfer can incur charges",
+      risk: "Watch for storage, request, and data transfer out charges — large file downloads add up",
       riskLevel: "low",
     },
     DynamoDB: {
-      free: "25 GB storage + 25 RCU + 25 WCU free forever (on-demand mode costs more per request)",
-      risk: "Low risk for dev workloads — use on-demand billing and stay within the free tier",
+      free: "Free-tier eligible with limited provisioned-capacity allowances; on-demand mode costs more per request",
+      risk: "Low risk for tiny dev workloads, but charges apply outside current AWS Free Tier limits or credits",
       riskLevel: "low",
     },
     RDS: {
-      free: "750 hours/month db.t2.micro free for 12 months only",
+      free: "Limited 12-month allowance for eligible new accounts only",
       risk: "⚠️ After 12 months or with larger instances: $15–$50/month. Instances charge 24/7 even when idle.",
       riskLevel: "high",
     },
     EC2: {
-      free: "750 hours/month t2.micro free for 12 months only",
+      free: "Limited 12-month allowance for eligible new accounts only",
       risk: "⚠️ After 12 months: ~$8–$10/month for a t2.micro running 24/7. A t3.medium runs ~$30/month.",
       riskLevel: "high",
     },
     CloudWatch: {
-      free: "10 custom metrics + 10 alarms + 5 GB log ingestion + 5 GB log storage free",
+      free: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
       risk: "Log storage accumulates over time — set 7-day retention on all Lambda log groups",
       riskLevel: "low",
     },
     Cognito: {
-      free: "50,000 monthly active users (MAUs) free forever",
+      free: "Free-tier eligible for limited monthly active users, subject to current AWS terms",
       risk: "$0.0055 per MAU above 50K — unlikely to hit this limit for most beginner projects",
       riskLevel: "free",
     },
     SQS: {
-      free: "1M requests/month free forever",
-      risk: "Negligible — $0.40 per million requests above the free tier",
+      free: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
+      risk: "Low for tiny workloads — about $0.40 per million requests above eligible allowances",
       riskLevel: "free",
     },
     SNS: {
-      free: "1M publishes + 100K HTTP deliveries free forever",
+      free: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits; SMS is paid immediately",
       risk: "SMS charges apply immediately: ~$0.0075 per message in the US — avoid during testing",
       riskLevel: "low",
     },
     CloudFront: {
-      free: "1 TB data out + 10M HTTP/HTTPS requests free for 12 months",
-      risk: "Low after free tier — $0.0085/GB data transfer. Cache invalidations: $0.005 each after first 1,000",
+      free: "Free-tier eligible for limited data transfer and request allowances on eligible accounts",
+      risk: "Low for tiny workloads, but data transfer and cache invalidations are paid after eligible allowances",
       riskLevel: "low",
     },
     IAM: {
-      free: "Always free — no charge for IAM users, roles, or policies",
+      free: "No separate charge for IAM users, roles, or policies",
       risk: "No cost",
       riskLevel: "free",
     },
@@ -732,13 +732,13 @@ export function generateCostReview(
       riskLevel: "high",
     },
     "Step Functions": {
-      free: "4,000 state transitions/month free forever",
-      risk: "Low — $0.025 per 1,000 state transitions above the free tier",
+      free: "Free-tier eligible within limited monthly AWS Free Tier allowances or credits",
+      risk: "Low for tiny workflows — $0.025 per 1,000 state transitions above eligible allowances",
       riskLevel: "free",
     },
     Amplify: {
-      free: "15 GB/month + 1,000 build minutes free for 12 months",
-      risk: "$0.01 per build minute + $0.15/GB served after free tier",
+      free: "Free-tier eligible for limited hosting and build-minute allowances on eligible accounts",
+      risk: "$0.01 per build minute + $0.15/GB served after eligible allowances",
       riskLevel: "low",
     },
   };
@@ -773,12 +773,12 @@ export function generateCostReview(
   let budgetAdvice = "";
   if (budget === "$0") {
     budgetAdvice =
-      "For a true $0/month budget: build with Lambda + DynamoDB + S3. Use Lambda Function URLs instead of API Gateway to stay free after the 12-month API Gateway free tier expires. These services have perpetual free tiers sufficient for most hobby projects. Avoid EC2, RDS, and SageMaker. Bedrock can be added later — only after AWS Budgets alerts and Lambda concurrency limits are in place.";
+      "For a cautious $0 target: prefer Lambda + DynamoDB + S3 and keep usage tiny. These services may be free within AWS Free Tier limits or credits, depending on account age, region, usage, and current AWS terms. Avoid EC2, RDS, SageMaker, and broad public endpoints. Bedrock can be added later only after AWS Budgets alerts, rate limits, and a nonzero budget are in place.";
     if (highRiskNames.length > 0) {
       budgetAdvice += ` ⚠️ Your plan includes ${highRiskNames.join(", ")} which can exceed $0. Consider serverless alternatives.`;
     }
   } else if (budget === "$1") {
-    budgetAdvice = `With a $1/month budget, serverless services (Lambda, API Gateway, DynamoDB) will keep costs near zero in the free tier. Set a $1 AWS Budget alert immediately (Console → Billing → Budgets → Zero spend budget). Avoid EC2 and RDS which charge continuously even at idle.`;
+    budgetAdvice = `With a $1/month budget, tiny serverless workloads can stay near zero when usage remains within current AWS Free Tier limits or credits. Set a $1 AWS Budget alert immediately (Console → Billing → Budgets → Zero spend budget). Avoid EC2 and RDS which charge continuously even at idle.`;
   } else if (budget === "$5") {
     budgetAdvice = `$5/month gives comfortable headroom for serverless workloads plus occasional S3 data transfer. You could add CloudFront within this budget for a small number of users. Set a $5 Budget alert (Console → Billing → Budgets).`;
   } else {
@@ -786,8 +786,8 @@ export function generateCostReview(
   }
 
   const estimatedMonthly = hasHighRisk
-    ? "$5–$50+ per month (depending on usage and free tier status)"
-    : "$0–$2 per month (mostly within free tier)";
+    ? "$5–$50+ per month (depending on usage, account age, region, and current AWS terms)"
+    : "$0–$2 per month (when kept within current AWS Free Tier limits or credits)";
 
   return { estimatedMonthly, freetiierItems, paidRisks, budgetAdvice };
 }
@@ -883,7 +883,7 @@ export function generateSteps(
       number: stepNum++,
       title: "Create your Lambda function with a least-privilege IAM role",
       description:
-        "Lambda runs your code on demand. Use 128 MB memory and a short timeout to stay within the free tier.",
+        "Lambda runs your code on demand. Use 128 MB memory, a short timeout, and low concurrency to keep usage within current AWS Free Tier limits or credits where eligible.",
       commands: [
         "# Create IAM execution role for Lambda",
         `aws iam create-role \\`,
@@ -929,24 +929,35 @@ export function generateSteps(
     if (!hasApiGateway) {
       steps.push({
         number: stepNum++,
-        title: "Add a Lambda Function URL (free HTTPS endpoint — no API Gateway needed)",
+        title: "Add a Lambda Function URL (HTTPS endpoint — prefer AWS_IAM auth)",
         description:
-          "Lambda Function URLs give your function a public HTTPS endpoint without API Gateway. They are always free and simpler to configure. Use them for $0 budget architectures.",
+          "Lambda Function URLs give your function an HTTPS endpoint without API Gateway. Prefer AWS_IAM authentication. AuthType NONE is public unauthenticated access and should only be used for throwaway demos with strict CORS, low reserved concurrency, input size validation, alarms, and cleanup.",
         commands: [
-          "# Create a public Function URL (auth type NONE — protect with Lambda logic or a secret header)",
+          "# Create a Function URL with AWS_IAM auth (safest default)",
           `aws lambda create-function-url-config \\`,
           `  --function-name my-lab-function \\`,
-          `  --auth-type NONE \\`,
+          `  --auth-type AWS_IAM \\`,
           `  --region ${region}`,
           "",
-          "# Grant public invoke permission for the Function URL",
+          "# Grant same-account permission to invoke via the Function URL",
+          `ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)`,
           `aws lambda add-permission \\`,
           `  --function-name my-lab-function \\`,
-          `  --statement-id FunctionURLAllowPublicAccess \\`,
+          `  --statement-id FunctionURLAllowAuthenticatedUrl \\`,
           `  --action lambda:InvokeFunctionUrl \\`,
-          `  --principal '*' \\`,
-          `  --function-url-auth-type NONE \\`,
+          `  --principal "$ACCOUNT_ID" \\`,
+          `  --function-url-auth-type AWS_IAM \\`,
           `  --region ${region}`,
+          `aws lambda add-permission \\`,
+          `  --function-name my-lab-function \\`,
+          `  --statement-id FunctionURLAllowAuthenticatedInvoke \\`,
+          `  --action lambda:InvokeFunction \\`,
+          `  --principal "$ACCOUNT_ID" \\`,
+          `  --invoked-via-function-url \\`,
+          `  --region ${region}`,
+          "",
+          "# Demo-only alternative: AuthType NONE is PUBLIC UNAUTHENTICATED access.",
+          "# Use NONE only for throwaway demos with strict CORS, low reserved concurrency, input size checks, and fast cleanup.",
           "",
           "# Get your Function URL",
           `aws lambda get-function-url-config \\`,
@@ -955,8 +966,7 @@ export function generateSteps(
           `  --output text \\`,
           `  --region ${region}`,
           "",
-          "# Test it",
-          `curl $(aws lambda get-function-url-config --function-name my-lab-function --query FunctionUrl --output text --region ${region})`,
+          "# Test signed requests with an AWS SigV4-capable client, or use the Lambda console test event.",
         ],
         consoleLink: `https://${region}.console.aws.amazon.com/lambda/home`,
       });
@@ -1166,14 +1176,6 @@ export function generateCleanup(services: DetectedService[], region: string): Cl
   }
 
   // CLI commands
-  if (hasLambda) {
-    commands.push(`# ─── Lambda ───────────────────────────────────────────────`);
-    commands.push(`aws lambda delete-function \\`);
-    commands.push(`  --function-name my-lab-function \\`);
-    commands.push(`  --region ${region}`);
-    commands.push(``);
-  }
-
   if (hasApiGateway) {
     commands.push(`# ─── API Gateway ──────────────────────────────────────────`);
     commands.push(`aws apigatewayv2 delete-api \\`);
@@ -1182,7 +1184,24 @@ export function generateCleanup(services: DetectedService[], region: string): Cl
     commands.push(``);
   } else if (hasLambda) {
     commands.push(`# ─── Lambda Function URL (remove if configured) ──────────`);
+    commands.push(`# Remove Function URL permissions first if you created them`);
+    commands.push(`aws lambda remove-permission \\`);
+    commands.push(`  --function-name my-lab-function \\`);
+    commands.push(`  --statement-id FunctionURLAllowAuthenticatedUrl \\`);
+    commands.push(`  --region ${region}`);
+    commands.push(`aws lambda remove-permission \\`);
+    commands.push(`  --function-name my-lab-function \\`);
+    commands.push(`  --statement-id FunctionURLAllowAuthenticatedInvoke \\`);
+    commands.push(`  --region ${region}`);
     commands.push(`aws lambda delete-function-url-config \\`);
+    commands.push(`  --function-name my-lab-function \\`);
+    commands.push(`  --region ${region}`);
+    commands.push(``);
+  }
+
+  if (hasLambda) {
+    commands.push(`# ─── Lambda ───────────────────────────────────────────────`);
+    commands.push(`aws lambda delete-function \\`);
     commands.push(`  --function-name my-lab-function \\`);
     commands.push(`  --region ${region}`);
     commands.push(``);
@@ -1265,7 +1284,7 @@ ${plan.architecture.diagram}
 
 ## Prerequisites
 
-- AWS Account (free tier recommended)
+- AWS Account with AWS Budgets enabled and current Free Tier or credit status checked
 - AWS CLI installed and configured, or use AWS CloudShell (no install needed)
 - Target region: \`${region}\`
 
@@ -1332,8 +1351,8 @@ export interface PipelineInput {
 export async function runGuardianPipeline(input: PipelineInput): Promise<LabPlan> {
   const { idea, skillLevel, budget, region } = input;
 
-  // Optional: call a Lambda Function URL if LAB_GUARDIAN_API_URL is configured
-  const lambdaUrl = import.meta.env?.LAB_GUARDIAN_API_URL as string | undefined;
+  // Optional: call a browser-callable Lambda Function URL if VITE_LAB_GUARDIAN_API_URL is configured
+  const lambdaUrl = import.meta.env?.VITE_LAB_GUARDIAN_API_URL as string | undefined;
   if (lambdaUrl) {
     try {
       const res = await fetch(lambdaUrl, {
@@ -1346,7 +1365,7 @@ export async function runGuardianPipeline(input: PipelineInput): Promise<LabPlan
         return { ...data, pipelineMode: "lambda" };
       }
     } catch {
-      console.warn("LAB_GUARDIAN_API_URL call failed — falling back to local pipeline");
+      console.warn("VITE_LAB_GUARDIAN_API_URL call failed — falling back to local pipeline");
     }
   }
 

@@ -21,7 +21,7 @@ Cloud Lab Guardian runs a **seven-stage deterministic pipeline** on every prompt
 3. **Clarify** by generating targeted clarifying questions (displayed for review)  
 4. **Architect** a beginner-safe architecture with free-tier notes  
 5. **Security review** — always-on safety warnings (public S3, AdministratorAccess, hardcoded keys, …)  
-6. **Cost analysis** — every service bucketed as free, 12-month free, or paid-risk  
+6. **Cost analysis** — every service bucketed as free-tier eligible, limited-trial/credit eligible, or paid-risk  
 7. **Step-by-step guide** + **cleanup checklist** + **exportable README**
 
 Each stage feeds the next. No LLM is required; all logic is pure deterministic TypeScript. An optional Lambda Function URL backend can be plugged in via a single environment variable.
@@ -31,7 +31,7 @@ Each stage feeds the next. No LLM is required; all logic is pure deterministic T
 ## Features
 
 - 🛡️ **Always-on safety warnings** — public S3, `AdministratorAccess`, hardcoded keys flagged on every plan
-- 💸 **Free-tier-aware cost review** — services bucketed as free, 12-month free, or high-risk paid
+- 💸 **Free-tier-aware cost review** — cautious AWS Free Tier, credit, and paid-risk notes
 - 🔧 **Step-by-step lab guide** — console-first, CloudShell-recommended setup
 - 🧹 **Cleanup checklist** — `aws` commands to tear down every resource when the lab is done
 - 📄 **README export** — download a portfolio-ready `README.md` for the lab
@@ -72,7 +72,7 @@ flowchart TD
     J --> K[LabPlan returned to UI]
 
     subgraph Pipeline mode
-        L{LAB_GUARDIAN_API_URL set?}
+        L{VITE_LAB_GUARDIAN_API_URL set?}
         L -- Yes --> M[Call Lambda Function URL]
         M -- success --> K
         M -- fail --> N[Local fallback]
@@ -104,11 +104,11 @@ Every generated plan **always** includes these warnings regardless of the prompt
 
 Cloud Lab Guardian uses a service risk table to classify every detected service:
 
-- ✅ **Free** — Lambda, S3, CloudWatch, IAM, DynamoDB (within limits)
-- 🕐 **12-month free** — EC2 t2.micro, RDS t3.micro, API Gateway
-- 🔴 **Paid risk** — EC2 general, RDS, NAT Gateway, Bedrock (flagged as high-risk)
+- **Free-tier eligible / limited allowance** — Lambda, S3, CloudWatch, DynamoDB, and similar services may be free within AWS Free Tier limits or credits, depending on account age, region, usage, and current AWS terms.
+- **Limited 12-month / credit-based allowance** — EC2, RDS, API Gateway, CloudFront, and similar services can become paid quickly when limits expire or usage exceeds allowances.
+- **Paid risk** — NAT Gateway, Bedrock, SageMaker, larger EC2/RDS configurations, and public endpoints are flagged as high-risk.
 
-The cost review section shows exactly which services you're using, what the free-tier limit is, and when charges begin.
+The cost review section shows which services you are using, where limited AWS Free Tier allowances or credits may apply, and where charges can begin.
 
 ---
 
@@ -124,7 +124,7 @@ The cost review section shows exactly which services you're using, what the free
 ```bash
 git clone https://github.com/YOUR_USERNAME/cloud-lab-guardian
 cd cloud-lab-guardian
-pnpm install
+corepack pnpm install --frozen-lockfile
 ```
 
 ### Start the dev server
@@ -139,7 +139,7 @@ Open [http://localhost:PORT](http://localhost:PORT) — the port is printed in t
 
 ```bash
 cp .env.example .env.local
-# Edit .env.local to set LAB_GUARDIAN_API_URL if you have a Lambda backend
+# Edit .env.local to set VITE_LAB_GUARDIAN_API_URL if you have a Lambda backend
 ```
 
 ---
@@ -147,14 +147,14 @@ cp .env.example .env.local
 ## How to run tests
 
 ```bash
-# All tests (81 golden tests across 5 canonical prompts)
-pnpm --filter @workspace/cloud-lab-guardian test
+# Golden regression suite across 5 canonical prompts
+corepack pnpm --filter @workspace/cloud-lab-guardian test
 
 # TypeScript typecheck
-pnpm --filter @workspace/cloud-lab-guardian typecheck
+corepack pnpm --filter @workspace/cloud-lab-guardian typecheck
 
 # Production build
-PORT=3000 pnpm --filter @workspace/cloud-lab-guardian build
+corepack pnpm --filter @workspace/cloud-lab-guardian build
 ```
 
 See [TESTING.md](TESTING.md) for a full breakdown of the test suite.
@@ -163,16 +163,20 @@ See [TESTING.md](TESTING.md) for a full breakdown of the test suite.
 
 ## Optional Lambda Function URL integration
 
-Cloud Lab Guardian can route pipeline execution to an AWS Lambda Function URL. This is useful if you want server-side logging, caching, or a shared backend.
+Cloud Lab Guardian can route pipeline execution to an AWS Lambda Function URL or compatible backend. This is useful if you want server-side logging, caching, or a shared backend. In Lambda mode, the project idea and form metadata are sent to the configured endpoint.
+
+For Lambda Function URLs, `AWS_IAM` is the safest default where practical. A static frontend cannot call an `AWS_IAM` Function URL directly unless requests are signed or proxied, and AWS credentials must never be placed in frontend code. Direct `VITE_LAB_GUARDIAN_API_URL` browser mode should point only to a browser-callable endpoint; if that is `AuthType NONE`, it is public unauthenticated access and should be limited to tightly restricted demos.
 
 1. Deploy your Lambda function (Node.js 20, handler receives `{ idea, skillLevel, budget, region }`)
 2. Set the environment variable:
 
 ```bash
-LAB_GUARDIAN_API_URL=https://your-function-url.lambda-url.us-east-1.on.aws/
+VITE_LAB_GUARDIAN_API_URL=https://your-function-url.lambda-url.us-east-1.on.aws/
 ```
 
 3. The app will call the Function URL first. If it fails, it transparently falls back to the local pipeline and shows an amber **"Lambda failed, using local fallback"** badge.
+
+`VITE_LAB_GUARDIAN_API_URL` is bundled into frontend JavaScript by Vite. It may contain only a browser-callable Lambda URL or compatible backend URL. Do not put API keys, tokens, AWS credentials, or secrets in any `VITE_` variable.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for full Lambda setup notes.
 
@@ -182,8 +186,9 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for full Lambda setup notes.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `LAB_GUARDIAN_API_URL` | No | — | Lambda Function URL to use as backend. If unset, the local pipeline runs. |
-| `PORT` | Yes (build/dev) | — | Port the Vite dev server and production server bind to. |
+| `VITE_LAB_GUARDIAN_API_URL` | No | — | Browser-callable Lambda Function URL or compatible backend URL. If unset, the local pipeline runs. Do not store secrets here. |
+| `BASE_PATH` | No | `/` | Vite base path for static hosting under a subpath. |
+| `PORT` | No | `3000` | Port the Vite dev server and preview server bind to. |
 
 See [.env.example](.env.example) for a copy-paste template.
 
@@ -191,14 +196,7 @@ See [.env.example](.env.example) for a copy-paste template.
 
 ## Screenshots
 
-| | |
-|---|---|
-| ![Home](screenshots/home.png) | ![Overview](screenshots/overview.png) |
-| Home — prompt input | Plan overview — detected services |
-| ![Security](screenshots/security.png) | ![Cost](screenshots/cost.png) |
-| Security warnings | Cost analysis |
-| ![Cleanup](screenshots/cleanup.png) | ![README export](screenshots/readme-export.png) |
-| Cleanup checklist | Exported README.md |
+Screenshots coming soon. The expected filenames are documented in [screenshots/README.md](screenshots/README.md), but image links are intentionally omitted until the PNG files are captured so GitHub does not render broken images.
 
 ---
 

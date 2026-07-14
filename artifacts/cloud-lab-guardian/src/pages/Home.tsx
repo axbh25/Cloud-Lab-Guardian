@@ -66,7 +66,7 @@ export default function Home() {
                 Design your AWS project safely.
               </h2>
               <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                Describe your idea. We'll generate a comprehensive, step-by-step architecture plan designed to keep you within the free tier and avoid surprise bills.
+                Describe your idea. We'll generate a comprehensive, step-by-step architecture plan designed around current AWS Free Tier limits, credits, and surprise-bill safeguards.
               </p>
             </div>
             

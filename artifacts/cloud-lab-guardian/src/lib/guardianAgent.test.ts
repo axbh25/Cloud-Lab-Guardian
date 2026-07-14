@@ -232,6 +232,13 @@ describe('Prompt: "Build a Lambda Function URL API"', () => {
     expect(cmds).toMatch(/--function-name/);
     expect(cmds).toMatch(/--region/);
   });
+
+  it('Function URL guidance includes both required Lambda permissions', () => {
+    const cmds = plan.steps.flatMap((s) => s.commands).join('\n');
+    expect(cmds).toMatch(/--action lambda:InvokeFunctionUrl/);
+    expect(cmds).toMatch(/--action lambda:InvokeFunction/);
+    expect(cmds).toMatch(/--invoked-via-function-url/);
+  });
 });
 
 describe('Prompt: "Build a serverless image uploader"', () => {

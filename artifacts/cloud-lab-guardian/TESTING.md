@@ -1,6 +1,6 @@
 # Testing Guide
 
-Cloud Lab Guardian has a suite of **81 golden tests** that verify every safety invariant across five canonical AWS project prompts. Tests run in under 600 ms with no network calls.
+Cloud Lab Guardian has a Vitest golden regression suite that verifies safety invariants across five canonical AWS project prompts. Tests run with no network calls.
 
 ---
 
@@ -14,7 +14,7 @@ pnpm --filter @workspace/cloud-lab-guardian test
 pnpm --filter @workspace/cloud-lab-guardian typecheck
 
 # Production build (confirms no bundler errors)
-PORT=3000 pnpm --filter @workspace/cloud-lab-guardian build
+pnpm --filter @workspace/cloud-lab-guardian build
 ```
 
 ---
@@ -85,6 +85,7 @@ For each of the 5 prompts, the suite verifies:
 | No API Gateway detected | **Regression:** "api" in "Function URL API" must not trigger API Gateway |
 | Lambda Function URL step | Steps include a Lambda Function URL setup step |
 | Function URL cleanup | Cleanup includes `delete-function-url-config`, not `apigatewayv2 delete-api` |
+| Function URL permissions | Steps include both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` permission statements |
 | `--function-name` present | Steps contain `--function-name` flag |
 | `--region` present | Steps contain `--region` flag |
 
